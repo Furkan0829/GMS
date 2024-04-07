@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - GymPro</title>
+</head>
+<body>
+    <h1>Login to GymPro</h1>
+    <form method="POST" action="login.php">
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
+
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        $conn = new mysqli('localhost', 'username', 'password', 'gympro_db'); // Replace with your database credentials
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "SELECT * FROM users WHERE username = '$username'";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_assoc();
+            if (password_verify($password, $row['password'])) {
+                echo "Login successful!";
+                // Redirect to the user dashboard
+            } else {
+                echo "Login failed. Please check your credentials.";
+            }
+        } else {
+            echo "Login failed. User not found.";
+        }
+
+        $conn->close();
+    }
+    ?>
+</body>
+</html>
